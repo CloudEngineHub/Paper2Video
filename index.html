@@ -27,8 +27,17 @@
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      transform: scale(0.8);
+      transform-origin: top center;  /* 缩放的锚点，保证从上方中间缩放 */
+    }
 
     /* Layout containers */
+      .page-container {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 20px;
+     }
     .main-content { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
 
     /* Demo: Paper + Image + Audio → Video */
@@ -117,37 +126,37 @@
         <div class="container is-max-desktop">
           <div class="columns is-centered">
             <div class="column has-text-centered">
-              <h1 class="title is-1 publication-title" style="max-width:100%; width:100%; text-align:center; line-height:1.2; font-size:3.7rem;">
+              <h1 class="title is-1 publication-title" style="text-align:center; font-size:3rem;">
                 Paper2Video:<br>
                 <span style="white-space:nowrap;">Automatic Video Generation from Scientific Papers</span>
             </h1>
 
-              <div class="is-size-3 publication-authors">
+              <div class="is-size-4 publication-authors">
                 <span class="author-block"><a href="https://zeyu-zhu.github.io/webpage/">Zeyu Zhu*</a>,</span>
                 <span class="author-block"><a href="https://qhlin.me/">Kevin Qinghong Lin*</a>,</span>
                 <span class="author-block"><a href="https://sites.google.com/view/showlab">Mike Zheng Shou<sup>✉</sup></span></a>
 
               </div>
-              <div class="is-size-3 publication-authors">
+              <div class="is-size-4 publication-authors">
                 <span class="author-block">Show Lab@National University of Singapore</span><br>
                 <span class="author-block">*Equal Contribution, <sup>✉</sup>Corresponding Author</span>
               </div>
 
               <div class="column has-text-centered">
-                <div class="publication-links" style="font-size:3rem; transform:scale(1.2); transform-origin:center;">
+                <div class="publication-links" style="font-size:1rem; transform:scale(1.2); transform-origin:center;">
                     <span class="link-block">
-                    <a href="https://arxiv.org/abs/2508.03050" class="external-link button is-normal is-rounded is-dark", style="font-size:1.25rem;">
+                    <a href="https://arxiv.org/abs/2508.03050" class="external-link button is-normal is-rounded is-dark", style="font-size:1rem;">
                         <span class="icon"><i class="fas fa-file-pdf" ></i></span><span>arXiv</span>
                     </a>
                     </span>
                     <span class="link-block">
-                    <a href="" class="external-link button is-normal is-rounded is-dark", style="font-size:1.25rem">
+                    <a href="" class="external-link button is-normal is-rounded is-dark", style="font-size:1rem">
                         <span class="icon"><i class="fab fa-github"></i></span><span>Code</span>
                     </a>
                     </span>
                     <span class="link-block">
                     <a href="https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/FJ8MRB"
-                        class="external-link button is-normal is-rounded is-dark", style="font-size:1.25rem">
+                        class="external-link button is-normal is-rounded is-dark", style="font-size:1rem">
                         <span class="icon"><i class="far fa-images"></i></span><span>Datasets</span>
                     </a>
                     </span>
@@ -330,7 +339,7 @@
       <div class="compare-col">
         <div class="compare-col-header">Baseline: Veo3</div>
         <figure class="compare-card">
-          <div class="compare-media"><video src=".assets/veo3/44.mp4" controls preload="metadata"></video></div>
+          <div class="compare-media"><video src="./assets/veo3/44.mp4" controls preload="metadata"></video></div>
           <figcaption class="compare-caption">Sample 44</figcaption>
         </figure>
       </div>
@@ -338,7 +347,7 @@
       <div class="compare-col">
         <div class="compare-col-header">Ours: PaperTalker</div>
         <figure class="compare-card">
-          <div class="compare-media"><video src=".assets/papertalker/44.mp4" controls preload="metadata"></video></div>
+          <div class="compare-media"><video src="./assets/papertalker/44.mp4" controls preload="metadata"></video></div>
           <figcaption class="compare-caption">Sample 44</figcaption>
         </figure>
       </div>
@@ -346,7 +355,7 @@
       <div class="compare-col">
         <div class="compare-col-header">Human</div>
         <figure class="compare-card">
-          <div class="compare-media"><video src=".assets/human_made/44.mp4" controls preload="metadata"></video></div>
+          <div class="compare-media"><video src="./assets/human_made/44.mp4" controls preload="metadata"></video></div>
           <figcaption class="compare-caption">Sample 44</figcaption>
         </figure>
       </div>
@@ -355,7 +364,7 @@
       <div class="compare-col">
         <div class="compare-col-header">Baseline: Veo3</div>
         <figure class="compare-card">
-          <div class="compare-media"><video src=".assets/veo3/80.mp4" controls preload="metadata"></video></div>
+          <div class="compare-media"><video src="./assets/veo3/80.mp4" controls preload="metadata"></video></div>
           <figcaption class="compare-caption">Sample 80</figcaption>
         </figure>
       </div>
@@ -363,7 +372,7 @@
       <div class="compare-col">
         <div class="compare-col-header">Ours: PaperTalker</div>
         <figure class="compare-card">
-          <div class="compare-media"><video src=".assets/papertalker/80.mp4" controls preload="metadata"></video></div>
+          <div class="compare-media"><video src="./assets/papertalker/80.mp4" controls preload="metadata"></video></div>
           <figcaption class="compare-caption">Sample 80</figcaption>
         </figure>
       </div>
@@ -371,7 +380,7 @@
       <div class="compare-col">
         <div class="compare-col-header">Human</div>
         <figure class="compare-card">
-          <div class="compare-media"><video src=".assets/human_made/80.mp4" controls preload="metadata"></video></div>
+          <div class="compare-media"><video src="./assets/human_made/80.mp4" controls preload="metadata"></video></div>
           <figcaption class="compare-caption">Sample 80</figcaption>
         </figure>
       </div>
@@ -380,7 +389,7 @@
       <div class="compare-col">
         <div class="compare-col-header">Baseline: Veo3</div>
         <figure class="compare-card">
-          <div class="compare-media"><video src=".assets/veo3/92.mp4" controls preload="metadata"></video></div>
+          <div class="compare-media"><video src="./assets/veo3/92.mp4" controls preload="metadata"></video></div>
           <figcaption class="compare-caption">Sample 92</figcaption>
         </figure>
       </div>
@@ -388,7 +397,7 @@
       <div class="compare-col">
         <div class="compare-col-header">Ours: PaperTalker</div>
         <figure class="compare-card">
-          <div class="compare-media"><video src=".assets/papertalker/92.mp4" controls preload="metadata"></video></div>
+          <div class="compare-media"><video src="./assets/papertalker/92.mp4" controls preload="metadata"></video></div>
           <figcaption class="compare-caption">Sample 92</figcaption>
         </figure>
       </div>
@@ -396,7 +405,7 @@
       <div class="compare-col">
         <div class="compare-col-header">Human</div>
         <figure class="compare-card">
-          <div class="compare-media"><video src=".assets/human_made/92.mp4" controls preload="metadata"></video></div>
+          <div class="compare-media"><video src="./assets/human_made/92.mp4" controls preload="metadata"></video></div>
           <figcaption class="compare-caption">Sample 92</figcaption>
         </figure>
       </div>
@@ -405,7 +414,7 @@
       <div class="compare-col">
         <div class="compare-col-header">Baseline: Veo3</div>
         <figure class="compare-card">
-          <div class="compare-media"><video src=".assets/veo3/100.mp4" controls preload="metadata"></video></div>
+          <div class="compare-media"><video src="./assets/veo3/100.mp4" controls preload="metadata"></video></div>
           <figcaption class="compare-caption">Sample 100</figcaption>
         </figure>
       </div>
@@ -413,7 +422,7 @@
       <div class="compare-col">
         <div class="compare-col-header">Ours: PaperTalker</div>
         <figure class="compare-card">
-          <div class="compare-media"><video src=".assets/papertalker/100.mp4" controls preload="metadata"></video></div>
+          <div class="compare-media"><video src="./assets/papertalker/100.mp4" controls preload="metadata"></video></div>
           <figcaption class="compare-caption">Sample 100</figcaption>
         </figure>
       </div>
@@ -421,7 +430,7 @@
       <div class="compare-col">
         <div class="compare-col-header">Human</div>
         <figure class="compare-card">
-          <div class="compare-media"><video src=".assets/human_made/100.mp4" controls preload="metadata"></video></div>
+          <div class="compare-media"><video src="./assets/human_made/100.mp4" controls preload="metadata"></video></div>
           <figcaption class="compare-caption">Sample 100</figcaption>
         </figure>
       </div>
@@ -433,10 +442,10 @@
 
    <!--Benchmark Stat-->
     <section class="section container">
-    <div class="text-container mt-5" style="max-width: 100%; margin: 0 auto;">
+    <div class="text-container mt-5" style="max-width:75%; margin: 0 auto;">
         <h2 class="title is-3 has-text-centered">Paper2Video Benchmark</h2>
         <div style="text-align: center; margin-top: 18px;">
-            <img src="assets/benchmark.png" alt="benchmark" style="max-width: 100%; height: auto; display: inline-block;" />
+            <img src="assets/benchmark.png" alt="benchmark" style="max-width:100%; height: auto; display: inline-block;" />
         </div>
 
         <div class="content has-text-justified" style="font-size: 1.5rem; line-height: 1.8;">
@@ -449,10 +458,10 @@
 
     <!--Metrics:  together with evaluation metrics: Meta Similarity, PresentArena, PresentQuiz, and IP Memory.-->
         <section class="section container">
-    <div class="text-container mt-5" style="max-width: 100%; margin: 0 auto;">
+    <div class="text-container mt-5" style="max-width:75%; margin: 0 auto;">
         <h2 class="title is-3 has-text-centered">Paper2Video Metrics</h2>
         <div style="text-align: center; margin-top: 18px;">
-            <img src="assets/metrics.png" alt="benchmark" style="max-width: 100%; height: auto; display: inline-block;" />
+            <img src="assets/metrics.png" alt="benchmark" style="max-width:100%; height: auto; display: inline-block;" />
         </div>
 
         <div class="content has-text-justified" style="font-size: 1.5rem; line-height: 1.8;">
@@ -480,10 +489,10 @@
 
     <!--Method-->
     <section class="section container">
-    <div class="text-container mt-5" style="max-width: 100%; margin: 0 auto;">
+    <div class="text-container mt-5" style="max-width:75%; margin: 0 auto;">
         <h2 class="title is-3 has-text-centered">Paper2Video Benchmark</h2>
         <div style="text-align: center; margin-top: 18px;">
-            <img src="assets/method.png" alt="benchmark" style="max-width: 100%; height: auto; display: inline-block;" />
+            <img src="assets/method.png" alt="benchmark" style="max-width:75%; height: auto; display: inline-block;" />
         </div>
 
         <div class="content has-text-justified" style="font-size: 1.5rem; line-height: 1.8;">
