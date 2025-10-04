@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="description" content="Automatic academic presentation video generation from scientific papers.">
+  <meta name="keywords" content="Paper2Video, Presentation Video, Multi-agent, Slides, Talking Head">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Paper2Video: Automatic Video Generation from Scientific Papers</title>
+
+  <!-- Analytics (optional) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-PYVRSFMDRL');
+  </script>
+
+  <!-- Fonts & CSS -->
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/favicon.svg">
+
+  <!-- JS (optional) -->
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* Layout containers */
+    .main-content { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
+
+    /* Demo: Paper + Image + Audio → Video */
+    .demo-container { max-width: 1400px; margin: 32px auto; padding: 0 20px; }
+    .demo-title { text-align: center; margin: 12px 0 24px; }
+    .pair-grid {
+      display: grid;
+      grid-template-columns: 1fr 60px 1fr;
+      gap: 24px;
+      margin-bottom: 40px;
+      align-items: center;
+      padding-bottom: 30px;
+      border-bottom: 1px solid #ccc;
+    }
+    .pair-grid:last-child { border-bottom: none; }
+    .left { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+    .images { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .images img { width: 200px; border-radius: 8px; border: 1px solid #ccc; }
+    audio { width: 100%; max-width: 420px; }
+    video { width: 100%; border-radius: 8px; border: 1px solid #ccc; background: black; }
+    .arrow { font-size: 32px; text-align: center; color: #777; }
+    .has-text-justified { text-align: justify; }
+    .image-container img { max-width: 100%; height: auto; display: inline-block; }
+    
+    /* Comparison section */
+    .compare-wrap { background:#ffffff; color:#0b0c10; }
+    .compare-container { max-width: 1400px; margin: 0 auto; padding: 32px 20px; }
+    .compare-header h1 { font-size: 28px; margin: 0 0 8px; }
+    .compare-header p { margin: 0 0 20px; color: #0b0c10; }
+    .compare-pair-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+    @media (max-width: 920px){ .compare-pair-grid { grid-template-columns: 1fr; } }
+    .compare-single-grid {
+      display: grid; grid-template-columns: min(860px, 100%);
+      justify-content: center; gap: 16px; margin-bottom: 20px;
+    }
+    .compare-col { background:#ffffff; border:1px solid #ffffff; border-radius:10px; display:flex; flex-direction:column; justify-content: center; align-items: center; }
+    .compare-col-header { background:#ffffff; border-bottom:1px solid #ffffff; padding:6px 10px; font-weight:bold; text-align:center; }
+    .compare-card { border:1px solid #ffffff; border-radius:8px; overflow:hidden; background:#ffffff; display:flex; flex-direction:column; height:100%; }
+    .compare-media { flex:1; display:flex; }
+    .compare-media > video { width:100%; height:100%; object-fit:contain; background:#ffffff; }
+    .compare-caption { padding:6px 10px; font-weight:600; text-align:center; }
+
+    /* TL;DR block (yellow, smaller fonts) */
+    :root{
+      --fg: #222;
+      --muted: #666;
+      --accent: #FFD54A;  /* yellow */
+      --title: #FFD54A;   /* yellow */
+    }
+    .tldr-wrap{ max-width: 1080px; margin: 40px auto 10px; padding: 0 20px; text-align:center; }
+    .tldr-title{
+      font-weight: 700; letter-spacing: .02em;
+      color: var(--title);
+      font-size: 22px;             /* small title */
+      margin: 0 0 12px;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji";
+    }
+    .tldr-sub{
+      font-size: 16px;             /* small text */
+      line-height: 1.5; color: var(--muted);
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji";
+    }
+    .tldr-highlight{ color: var(--accent); font-weight: 600; text-decoration: none; }
+  </style>
+</head>
+
+<body>
+  <!-- Top Nav -->
+  <div class="main-content">
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+          <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+        </a>
+      </div>
+      <div class="navbar-menu">
+        <div class="navbar-start" style="flex-grow:1; justify-content:center;">
+          <a class="navbar-item" href="#"><span class="icon"><i class="fas fa-home"></i></span></a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-body">
+        <div class="container is-max-desktop">
+          <div class="columns is-centered">
+            <div class="column has-text-centered">
+              <h1 class="title is-1 publication-title" style="max-width:100%; width:100%; text-align:center; line-height:1.2; font-size:3.7rem;">
+                Paper2Video:<br>
+                <span style="white-space:nowrap;">Automatic Video Generation from Scientific Papers</span>
+            </h1>
+
+              <div class="is-size-3 publication-authors">
+                <span class="author-block"><a href="https://zeyu-zhu.github.io/webpage/">Zeyu Zhu*</a>,</span>
+                <span class="author-block"><a href="https://qhlin.me/">Kevin Qinghong Lin*</a>,</span>
+                <span class="author-block"><a href="https://sites.google.com/view/showlab">Mike Zheng Shou<sup>✉</sup></span></a>
+
+              </div>
+              <div class="is-size-3 publication-authors">
+                <span class="author-block">Show Lab@National University of Singapore</span><br>
+                <span class="author-block">*Equal Contribution, <sup>✉</sup>Corresponding Author</span>
+              </div>
+
+              <div class="column has-text-centered">
+                <div class="publication-links" style="font-size:3rem; transform:scale(1.2); transform-origin:center;">
+                    <span class="link-block">
+                    <a href="https://arxiv.org/abs/2508.03050" class="external-link button is-normal is-rounded is-dark", style="font-size:1.25rem;">
+                        <span class="icon"><i class="fas fa-file-pdf" ></i></span><span>arXiv</span>
+                    </a>
+                    </span>
+                    <span class="link-block">
+                    <a href="" class="external-link button is-normal is-rounded is-dark", style="font-size:1.25rem">
+                        <span class="icon"><i class="fab fa-github"></i></span><span>Code</span>
+                    </a>
+                    </span>
+                    <span class="link-block">
+                    <a href="https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/FJ8MRB"
+                        class="external-link button is-normal is-rounded is-dark", style="font-size:1.25rem">
+                        <span class="icon"><i class="far fa-images"></i></span><span>Datasets</span>
+                    </a>
+                    </span>
+                </div>
+                </div>
+
+
+            </div><!-- /.column -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TL;DR -->
+    <section class="tldr-wrap">
+    <h2 class="tldr-title">TL;DR</h2>
+    <p class="tldr-sub">
+        We address <span class="tldr-highlight">How to create a presentation video from a paper</span><br>
+        and <span class="tldr-highlight">How to evaluate presentation video</span>.
+    </p>
+    </section>
+
+<style>
+  :root{
+    --fg: #222;
+    --muted: #666;
+    --accent: #f8ba00;  /* 深黄色 */
+    --title: #ffbf00;
+  }
+  .tldr-wrap{ max-width: 980px; margin: 40px auto 10px; padding: 0 20px; text-align:center; }
+  .tldr-title{
+    font-weight: 700; letter-spacing: .02em;
+    color: var(--title);
+    font-size: 35px;
+    margin: 0 0 12px;
+  }
+  .tldr-sub{
+    font-size: 28px;
+    line-height: 1.5; color: var(--muted);
+  }
+  .tldr-highlight{
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+  }
+</style>
+
+
+    <!-- Teaser image -->
+    <div class="image-container has-text-centered" style="margin-top:18px;">
+      <img src="assets/teaser.png" alt="Teaser" />
+    </div>
+
+    <!-- Abstract -->
+    <section class="section container">
+      <div class="text-container mt-5">
+        <h2 class="title is-2 has-text-centered">Abstract</h2>
+        <div class="content has-text-justified", style="font-size:1.5rem">
+          <p>
+            Academic presentation videos have become an essential medium for research communication, yet producing them remains highly labor-intensive, often requiring hours of slide design, recording, and editing for a short 2 to 10 minutes video. Unlike natural video, presentation video generation involves distinctive challenges: inputs from research papers, <strong>dense multi-modal information (text, figures, tables)</strong>, and the need to <strong>coordinate multiple aligned channels such as slides, subtitles, speech, and human talker</strong>. To address these challenges, we introduce <strong>PaperTalker</strong>, the first benchmark of 101 research papers paired with author-created presentation videos, slides, and speaker metadata. We further design four tailored evaluation metrics—Meta Similarity, PresentArena, <strong>PresentQuiz</strong>, and <strong>IP Memory</strong>—to measure how videos convey the paper's information to the audience. Building on this foundation, we propose <strong>PaperTalker</strong>, the first multi-agent framework for academic presentation video generation. It integrates slide generation with effective layout refinement by a novel effective <strong>tree search visual choice</strong>, cursor grounding, subtitling, speech synthesis, and talking-head rendering, while <strong>parallelizing slide-wise generation</strong> for efficiency. Experiments on Paper2Video demonstrate that the presentation videos produced by our approach are more faithful and informative than existing baselines, establishing a practical step toward automated and ready-to-use academic video generation.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div><!-- /.main-content -->
+  
+  <hr>
+
+  <!-- One full-width video -->
+  <div class="demo-container">
+  <header class="compare-header">
+    <h1>Below is example of Paper2Video for Paper2Video😼</h1>
+  </header>
+  <video src="assets/zeyu_papertalker.mp4" controls preload="metadata"
+         style="max-width: 1080px; width: 100%; border-radius: 8px; border: 1px solid #ccc; display: block; margin: 20px auto; background: black;">
+  </video>
+ </div>
+
+
+
+  <!-- Multi-modal Demos -->
+  <div class="demo-container">
+    <div class="compare-container">
+      <header class="compare-header">
+        <h1>Demos Generated by PaperTalker🎬</h1>
+      </header>
+      <h2 class="title is-3 demo-title">Paper + Image + Audio → Presentation Video</h2>
+
+      <div class="pair-grid">
+        <div class="left">
+          <div class="images">
+            <img src="assets/hinton/paper.png" alt="Paper">
+            <img src="assets/hinton/hinton_head.jpeg" alt="Head">
+          </div>
+          <audio controls>
+            <source src="assets/hinton/ref_audio_10.wav" type="audio/wav">
+          </audio>
+        </div>
+        <div class="arrow">➡️</div>
+        <div class="right">
+          <video controls>
+            <source src="assets/hinton/hinton.mp4" type="video/mp4">
+          </video>
+        </div>
+      </div>
+
+      <div class="pair-grid">
+        <div class="left">
+          <div class="images">
+            <img src="assets/huang/paper.png" alt="Paper">
+            <img src="assets/huang/huang_head.png" alt="Head">
+          </div>
+          <audio controls>
+            <source src="assets/huang/ref_audio_10.wav" type="audio/wav">
+          </audio>
+        </div>
+        <div class="arrow">➡️</div>
+        <div class="right">
+          <video controls>
+            <source src="assets/huang/huang.mp4" type="video/mp4">
+          </video>
+        </div>
+      </div>
+
+      <div class="pair-grid">
+        <div class="left">
+          <div class="images">
+            <img src="assets/lecun/paper.png" alt="Paper">
+            <img src="assets/lecun/lecun_head.png" alt="Head">
+          </div>
+          <audio controls>
+            <source src="assets/lecun/ref_audio_10.wav" type="audio/wav">
+          </audio>
+        </div>
+        <div class="arrow">➡️</div>
+        <div class="right">
+          <video controls>
+            <source src="assets/lecun/lecun.mp4" type="video/mp4">
+          </video>
+        </div>
+      </div>
+
+    <div class="pair-grid">
+        <div class="left">
+          <div class="images">
+            <img src="assets/paper2video/paper.png" alt="Paper">
+            <img src="assets/paper2video/nus_head.png" alt="Head">
+          </div>
+          <audio controls>
+            <source src="assets/paper2video/ref_audio_10.wav" type="audio/wav">
+            Your browser does not support the audio element.
+          </audio>
+        </div>
+        <div class="arrow">➡️</div>
+        <div class="right">
+          <video controls>
+            <source src="assets/paper2video/nus.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+
+<!-- Comparison Section -->
+<section class="compare-wrap">
+  <div class="compare-container">
+    <header class="compare-header">
+      <h1>Comparison: Veo3, PaperTalker, Human🆚</h1>
+      <p>Left = Veo3, Middle = PaperTalker (Ours), Right = Human. All samples are from Paper2Video benchmark.</p>
+    </header>
+
+    <!-- Pair blocks -->
+    <div class="compare-pair-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+      
+      <!-- Veo3 -->
+      <div class="compare-col">
+        <div class="compare-col-header">Baseline: Veo3</div>
+        <figure class="compare-card">
+          <div class="compare-media"><video src=".assets/veo3/44.mp4" controls preload="metadata"></video></div>
+          <figcaption class="compare-caption">Sample 44</figcaption>
+        </figure>
+      </div>
+      <!-- Ours -->
+      <div class="compare-col">
+        <div class="compare-col-header">Ours: PaperTalker</div>
+        <figure class="compare-card">
+          <div class="compare-media"><video src=".assets/papertalker/44.mp4" controls preload="metadata"></video></div>
+          <figcaption class="compare-caption">Sample 44</figcaption>
+        </figure>
+      </div>
+      <!-- Human -->
+      <div class="compare-col">
+        <div class="compare-col-header">Human</div>
+        <figure class="compare-card">
+          <div class="compare-media"><video src=".assets/human_made/44.mp4" controls preload="metadata"></video></div>
+          <figcaption class="compare-caption">Sample 44</figcaption>
+        </figure>
+      </div>
+
+      <!-- Veo3 -->
+      <div class="compare-col">
+        <div class="compare-col-header">Baseline: Veo3</div>
+        <figure class="compare-card">
+          <div class="compare-media"><video src=".assets/veo3/80.mp4" controls preload="metadata"></video></div>
+          <figcaption class="compare-caption">Sample 80</figcaption>
+        </figure>
+      </div>
+      <!-- Ours -->
+      <div class="compare-col">
+        <div class="compare-col-header">Ours: PaperTalker</div>
+        <figure class="compare-card">
+          <div class="compare-media"><video src=".assets/papertalker/80.mp4" controls preload="metadata"></video></div>
+          <figcaption class="compare-caption">Sample 80</figcaption>
+        </figure>
+      </div>
+      <!-- Human -->
+      <div class="compare-col">
+        <div class="compare-col-header">Human</div>
+        <figure class="compare-card">
+          <div class="compare-media"><video src=".assets/human_made/80.mp4" controls preload="metadata"></video></div>
+          <figcaption class="compare-caption">Sample 80</figcaption>
+        </figure>
+      </div>
+
+      <!-- Veo3 -->
+      <div class="compare-col">
+        <div class="compare-col-header">Baseline: Veo3</div>
+        <figure class="compare-card">
+          <div class="compare-media"><video src=".assets/veo3/92.mp4" controls preload="metadata"></video></div>
+          <figcaption class="compare-caption">Sample 92</figcaption>
+        </figure>
+      </div>
+      <!-- Ours -->
+      <div class="compare-col">
+        <div class="compare-col-header">Ours: PaperTalker</div>
+        <figure class="compare-card">
+          <div class="compare-media"><video src=".assets/papertalker/92.mp4" controls preload="metadata"></video></div>
+          <figcaption class="compare-caption">Sample 92</figcaption>
+        </figure>
+      </div>
+      <!-- Human -->
+      <div class="compare-col">
+        <div class="compare-col-header">Human</div>
+        <figure class="compare-card">
+          <div class="compare-media"><video src=".assets/human_made/92.mp4" controls preload="metadata"></video></div>
+          <figcaption class="compare-caption">Sample 92</figcaption>
+        </figure>
+      </div>
+
+      <!-- Veo3 -->
+      <div class="compare-col">
+        <div class="compare-col-header">Baseline: Veo3</div>
+        <figure class="compare-card">
+          <div class="compare-media"><video src=".assets/veo3/100.mp4" controls preload="metadata"></video></div>
+          <figcaption class="compare-caption">Sample 100</figcaption>
+        </figure>
+      </div>
+      <!-- Ours -->
+      <div class="compare-col">
+        <div class="compare-col-header">Ours: PaperTalker</div>
+        <figure class="compare-card">
+          <div class="compare-media"><video src=".assets/papertalker/100.mp4" controls preload="metadata"></video></div>
+          <figcaption class="compare-caption">Sample 100</figcaption>
+        </figure>
+      </div>
+      <!-- Human -->
+      <div class="compare-col">
+        <div class="compare-col-header">Human</div>
+        <figure class="compare-card">
+          <div class="compare-media"><video src=".assets/human_made/100.mp4" controls preload="metadata"></video></div>
+          <figcaption class="compare-caption">Sample 100</figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr>
+
+   <!--Benchmark Stat-->
+    <section class="section container">
+    <div class="text-container mt-5" style="max-width: 100%; margin: 0 auto;">
+        <h2 class="title is-3 has-text-centered">Paper2Video Benchmark</h2>
+        <div style="text-align: center; margin-top: 18px;">
+            <img src="assets/benchmark.png" alt="benchmark" style="max-width: 100%; height: auto; display: inline-block;" />
+        </div>
+
+        <div class="content has-text-justified" style="font-size: 1.5rem; line-height: 1.8;">
+            <p>
+                We present Paper2Video, the <strong>first</strong> high-quality benchmark of 101 papers with author-recorded presentation videos, slides, and speaker metadata. The Paper2Video Benchmark includes 101 curated paper–video pairs spanning diverse research topics. Each paper averages about 13.3K words, 44.7 figures, and 28.7 pages, providing rich multimodal long-document inputs. Presentations contain on average 16 slides and run for about 6 minutes 15 seconds, with some reaching up to 14 minutes. Rather than focusing only on video generation, <strong>Paper2Video is designed to evaluate long-horizon agentic tasks that require integrating text, figures, slides, and spoken presentations.</strong>
+        </p>
+        </div>
+    </div>
+    </section>
+
+    <!--Metrics:  together with evaluation metrics: Meta Similarity, PresentArena, PresentQuiz, and IP Memory.-->
+        <section class="section container">
+    <div class="text-container mt-5" style="max-width: 100%; margin: 0 auto;">
+        <h2 class="title is-3 has-text-centered">Paper2Video Metrics</h2>
+        <div style="text-align: center; margin-top: 18px;">
+            <img src="assets/metrics.png" alt="benchmark" style="max-width: 100%; height: auto; display: inline-block;" />
+        </div>
+
+        <div class="content has-text-justified" style="font-size: 1.5rem; line-height: 1.8;">
+            <p>
+                Unlike natural video generation, academic presentation videos serve a highly specialized role: they are not merely about visual fidelity but about communicating scholarship. This makes it difficult to directly apply conventional metrics from video synthesis (e.g., FVD, IS, or CLIP-based similarity). Instead, their value lies in how well they disseminate research and amplify scholarly visibility.             From this perspective, we argue that a high-quality academic presentation video should be judged along two complementary dimensions:
+            </p>            
+            <p><strong>For the audience</strong></p>
+            <ul>
+                <li>The video is expected to faithfully convey the paper’s core ideas.</li>
+                <li>It should remain accessible to diverse audiences.</li>
+            </ul>
+            <p><strong>For the author</strong></p>
+            <ul>
+                <li>The video should foreground the authors’ intellectual contribution and identity.</li>
+                <li>It should enhance the work’s visibility and impact.</li>
+            </ul>
+            <p>
+                To capture these goals, we introduce tailored evaluation metrics specifically designed for academic presentation videos: Meta Similarity, PresentArena, <strong>PresentQuiz</strong> and <strong>IP Memory</strong>.
+            </p>
+        </div>
+
+
+    </div>
+    </section>
+
+    <!--Method-->
+    <section class="section container">
+    <div class="text-container mt-5" style="max-width: 100%; margin: 0 auto;">
+        <h2 class="title is-3 has-text-centered">Paper2Video Benchmark</h2>
+        <div style="text-align: center; margin-top: 18px;">
+            <img src="assets/method.png" alt="benchmark" style="max-width: 100%; height: auto; display: inline-block;" />
+        </div>
+
+        <div class="content has-text-justified" style="font-size: 1.5rem; line-height: 1.8;">
+            <p>
+                To address these challenges and liberate researchers from the burdensome task of manual video preparation, we introduce <strong>PaperTalker</strong>, a multi-agent framework designed to automatically generate presentation videos directly from academic papers. 
+            </p>
+
+            <p>
+                As illustrated in Figure 4, to decouple the different roles and make the method scalable and flexible, the pipeline comprises four builders:
+            </p>
+
+            <ol>
+                <li>
+                <strong>Slide builder.</strong> Given the paper, we first synthesize slides with LaTeX code and refine them with compilation feedback to correct grammar and optimize layout.
+                </li>
+                <li>
+                <strong>Subtitle builder.</strong> The slides are then processed by a VLM to generate subtitles and sentence-level visual-focus prompts.
+                </li>
+                <li>
+                <strong>Cursor builder.</strong> These prompts are then grounded into on-screen cursor coordinates and synchronized with the narration.
+                </li>
+                <li>
+                <strong>Talker builder.</strong> Given the voice sample and the portrait of the speaker, text-to-speech and talking-head modules generate a realistic, personalized talker video.
+                </li>
+            </ol>
+        </div>
+
+    </div>
+    </section>
+
+  <!-- BibTeX -->
+  <section class="section" id="BibTeX">
+    <div class="container is-max-desktop content">
+      <h2 class="title">BibTeX</h2>
+      <pre><code>
+
+      </code></pre>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="content has-text-centered">
+        <a class="icon-link" href="./static/videos/nerfies_paper.pdf"><i class="fas fa-file-pdf"></i></a>
+        <a class="icon-link" href="https://github.com/keunhong" class="external-link" disabled>
+          <i class="fab fa-github"></i>
+        </a>
+      </div>
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="content">
+            <p>
+              This website is licensed under a
+              <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+              You are free to borrow the <a href="https://github.com/nerfies/nerfies.github.io">source code</a>; please link back to this page in the footer.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
