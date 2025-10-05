@@ -31,6 +31,24 @@
       transform: scale(0.8);
       transform-origin: top center;  /* 缩放的锚点，保证从上方中间缩放 */
     }
+    .page-heading {
+      background-color: #ffbf00;   /* 黄色背景 */
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .page-heading img {
+      height: 28px;   /* 图标大小 */
+      margin-right: 10px;
+    }
+    
+    .page-heading span {
+      font-size: 20px;
+      font-weight: bold;
+      color: #000000;   /* 黑色字体 */
+    }
+
 
     /* Layout containers */
       .page-container {
@@ -105,6 +123,11 @@
 </head>
 
 <body>
+  <div class="page-heading">
+    <img src="assets/logo.png" alt="icon">
+    <span>Paper2Video</span>
+</div>
+  
   <!-- Top Nav -->
   <div class="main-content">
     <nav class="navbar" role="navigation" aria-label="main navigation">
