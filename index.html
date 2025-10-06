@@ -36,6 +36,9 @@
       padding: 12px 20px;
       display: flex;
       align-items: center;
+    
+      width: 100%;        /* 占满整行 */
+      box-sizing: border-box; /* 避免 padding 超出页面宽度 */
     }
     
     .page-heading img {
@@ -121,12 +124,12 @@
   </style>
 </head>
 
-<body>
   <div class="page-heading">
     <img src="assets/logo.png" alt="icon">
     <span>Paper2Video</span>
 </div>
   
+<body>
   <!-- Top Nav -->
   <div class="main-content">
     <nav class="navbar" role="navigation" aria-label="main navigation">
