@@ -90,7 +90,7 @@ if __name__ == '__main__':
         prompt_path = "/users/zeyuzhu/Paper2Present/P2VAgent/prompts/slide_beamer_prompt.txt"
         if args.if_tree_search is True: 
             usage_slide, beamer_path = latex_code_gen_upgrade(prompt_path=prompt_path, tex_dir=args.paper_latex_root, beamer_save_path=slide_latex_path, 
-                                                            model_config_ll=agent_config_t, model_config_vl=agent_config_v, beamer_temp_name=args.beamer_templete_path)
+                                                            model_config_ll=agent_config_t, model_config_vl=agent_config_v, beamer_temp_name=args.beamer_templete_prompt)
         else:
             paper_latex_path = path.join(args.paper_latex_root, "main.tex") 
             usage_slide = latex_code_gen(prompt_path=prompt_path, tex_dir=args.paper_latex_root, tex_path=paper_latex_path, beamer_save_path=slide_latex_path, model_config=agent_config_t)
