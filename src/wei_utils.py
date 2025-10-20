@@ -9,6 +9,20 @@ def get_agent_config(model_type):
             "model_config": QwenConfig().as_dict(),
             "model_platform": ModelPlatformType.DEEPINFRA,
         }
+    elif model_type == 'gemini-2.5-pro':
+        agent_config = {
+            "model_type": ModelType.GEMINI_2_5_PRO,
+            "model_config": GeminiConfig().as_dict(),
+            "model_platform": ModelPlatformType.GEMINI,
+            'max_images': 99
+        }
+    elif model_type == 'gemini-2.5-flash':
+        agent_config = {
+            "model_type": ModelType.GEMINI_2_5_FLASH,
+            "model_config": GeminiConfig().as_dict(),
+            "model_platform": ModelPlatformType.GEMINI,
+            'max_images': 99
+        }
     elif model_type == 'gemini':
         agent_config = {
             "model_type": ModelType.DEEPINFRA_GEMINI_2_FLASH,
