@@ -34,15 +34,19 @@ def run_hallo2_inference(args):
     ]
     result = subprocess.run(cmd, env=env)
 
-    shutil.move(config_bak, config_path)
+    # shutil.move(config_bak, config_path)
+    os.remove(config_bak)
     return result
     
 def talking_gen_per_slide(model_type, input_list, save_dir, gpu_list, env_path):
     num_gpu = len(gpu_list)
     print(gpu_list)
     if model_type == "hallo2":
-        config_path="hallo2/configs/inference/long.yaml"
-        script_path="hallo2/scripts/inference_long.py"
+        # config_path="hallo2/configs/inference/long.yaml"
+        # script_path="hallo2/scripts/inference_long.py"
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        config_path = os.path.join(project_root, 'hallo2/configs/inference/long.yaml')
+        script_path = os.path.join(project_root, 'hallo2/scripts/inference_long.py')
         task_list = []
         task_num = 0
         for idx, (ref_img_path, audio_path) in enumerate(input_list):

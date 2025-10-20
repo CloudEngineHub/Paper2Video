@@ -22,7 +22,7 @@ from speech_gen import tts_per_slide
 from subtitle_render import add_subtitles
 from talking_gen import talking_gen_per_slide
 from cursor_gen import cursor_gen_per_sentence
-from slide_code_gen import latex_code_gen
+# from slide_code_gen import latex_code_gen
 from slide_code_gen_select_improvement import latex_code_gen_upgrade
 from cursor_render import render_video_with_cursor_from_json
 from subtitle_cursor_prompt_gen import subtitle_cursor_gen
